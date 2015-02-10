@@ -1,6 +1,5 @@
 'use strict';
 
-require('../simple_http_server');
 var chai = require('chai');
 var chaihttp = require('chai-http');
 
@@ -9,37 +8,23 @@ chai.use(chaihttp);
 var expect = chai.expect;
 
 describe('our http server', function() {
-  var server = 'localhost:3000';
+  var server = 'localhost:8888';
   it('should respond to /time request', function(done) {
     chai.request(server)
       .get('/time')
       .end(function(err, res) {
         expect(err).to.eql(null);
         expect(res).to.have.status(200);
-        expect(res.text).to.eql('wow, first route\nsuch http\n');
+        var currServerTime = new Date().toTimeString();
+
+        //expect(res.text.slice(0,10)).to
+        //  .eql('Current Server Time = 03:59:18 GMT-0800 (PST)');
+        var curSrvrTmLen = 'Current Server Time = '.length;
+        curSrvrTmLen += 'hh:mm'.length;
+        expect(res.text.slice(0,curSrvrTmLen)).to.eql('Current Server Time = ' +
+          currServerTime.slice(0,5));
         done();
       });
   });
 
-  it('should respond to a second request', function(done) {
-    chai.request(server)
-      .get('/second_route')
-      .end(function(err, res) {
-        expect(err).to.eql(null);
-        expect(res).to.have.status(200);
-        expect(res.text).to.eql('wow, second route\nsuch http\n');
-        done();
-      });
-  });
-
-  it('should have a default route', function(done) {
-    chai.request(server)
-      .get('/some_other_route')
-      .end(function(err, res) {
-        expect(err).to.eql(null);
-        expect(res).to.have.status(200);
-        expect(res.text).to.eql('did not hit a route\nsuch http\n');
-        done();
-      });
-  });
 });
